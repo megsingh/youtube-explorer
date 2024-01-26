@@ -10,11 +10,11 @@ To make an API to fetch the latest videos sorted in reverse chronological order 
 - A basic search API to search the stored videos using their title and description.
 
 ## Table of Contents
-* [Getting Started](##-Getting-Started)
-* [Running the Project](##-Running-the-Project)
-  - [Run manually](###-Run-Manually)
-  - [Run with Docker](###-Run-with-Docker)
-* [API Reference](##-API-Reference)
+* [Getting Started](#getting-started)
+* [Running the Project](#running-the-project)
+  - [Run manually](#run-manually)
+  - [Run with Docker](#run-with-docker)
+* [API Reference](#api-reference)
 
 ## Getting Started
 
