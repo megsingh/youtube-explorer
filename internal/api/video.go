@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"os"
 	"youtube_project/internal/models"
 	"youtube_project/internal/repository"
@@ -48,7 +47,6 @@ func (v *videoService) FetchFromYoutube(youtubeService YouTubeAPIService) ([]mod
 }
 
 func (v *videoService) GetAll(nextToken string) (models.PaginationResponse, error) {
-	log.Println("getting all videos according to published date")
 
 	response, err := v.storage.GetPaginatedVideos(nextToken)
 	if err != nil {

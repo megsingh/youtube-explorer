@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"log"
 	"os"
 	"strconv"
 	"youtube_project/internal/models"
@@ -162,7 +161,6 @@ func buildSearchPipeline(searchIndex, searchQuery, token, requiredField string, 
 	}
 
 	pipeline = append(pipeline, limitStage, projectStage)
-	log.Println(pipeline)
 	return pipeline
 }
 
@@ -177,7 +175,6 @@ func createPaginatedResponse(cursor *mongo.Cursor, limit int) (models.Pagination
 
 	//iterate over the response using the cursor and store the videos in the video array
 	for cursor.Next(context.TODO()) {
-		log.Println("iterating through responses")
 		var video models.Video
 		err := cursor.Decode(&video)
 		if err != nil {
