@@ -15,7 +15,7 @@ services:
     restart: always
 
     environment:
-      - MONGODB_URI=mongodb+srv://pratidhir:collection123@meghnacluster.fsril1b.mongodb.net/?retryWrites=true&w=majority
+      - MONGODB_URI=mongodb+srv://local:1234@localcluster.x4flzwg.mongodb.net/?retryWrites=true&w=majority
       - DB_NAME=youtubeDB
       - DB_COLLECTION=videos
       - API_KEY=AIzaSyCc4qs5zwIfTUm1tdbutxQBChsNq9f_TUI | AIzaSyC1FohDQdhjsq_q82EytjtWlZkEWKkhHhM | AIzaSyBHsFm6PegZAAg_YGd8Nhr8xgd20cM0itg | AIzaSyAIzkmRELNWtG3Iur4ViHKErJ1Hx4Y6YAI

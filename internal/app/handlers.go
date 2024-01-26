@@ -11,8 +11,7 @@ func (s *Server) ApiStatus() gin.HandlerFunc {
 		c.Header("Content-Type", "application/json")
 
 		response := map[string]string{
-			"status": "success",
-			"data":   "youtube video search API running smoothly",
+			"data": "youtube video search API running smoothly",
 		}
 
 		c.JSON(http.StatusOK, response)
@@ -29,7 +28,11 @@ func (s *Server) GetAllVideos() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, videos)
+		response := map[string]interface{}{
+			"data": videos,
+		}
+
+		c.JSON(http.StatusOK, response)
 	}
 }
 
@@ -45,6 +48,9 @@ func (s *Server) Search() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, videos)
+		response := map[string]interface{}{
+			"data": videos,
+		}
+		c.JSON(http.StatusOK, response)
 	}
 }
