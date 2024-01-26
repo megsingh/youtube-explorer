@@ -4,12 +4,12 @@ import "time"
 
 type Video struct {
 	Title           string    `json:"title"`
-	ChannelId       string    `json:"channelId"`
-	ChannelTitle    string    `json:"channelTitle"`
+	ChannelId       string    `json:"channelid"`
+	ChannelTitle    string    `json:"channeltitle"`
 	Description     string    `json:"description"`
-	PublishedAt     time.Time `json:"published_at"`
-	ThumbnailUrl    string    `json:"thumbnail_url"`
-	PaginationToken string    `json:"paginationToken"`
+	PublishedAt     time.Time `json:"publishedat"`
+	ThumbnailUrl    string    `json:"thumbnailurl"`
+	PaginationToken string    `json:"paginationtoken"`
 }
 
 type PaginationResponse struct {

@@ -15,14 +15,15 @@ services:
     restart: always
 
     environment:
-      - MONGODB_URI=mongodb+srv://local:1234@localcluster.x4flzwg.mongodb.net/?retryWrites=true&w=majority
+      - MONGODB_URI=mongodb+srv://local:k38iFw9cIZilDXxQ@localcluster.x4flzwg.mongodb.net/?retryWrites=true&w=majority
       - DB_NAME=youtubeDB
       - DB_COLLECTION=videos
       - API_KEY=AIzaSyCc4qs5zwIfTUm1tdbutxQBChsNq9f_TUI | AIzaSyC1FohDQdhjsq_q82EytjtWlZkEWKkhHhM | AIzaSyBHsFm6PegZAAg_YGd8Nhr8xgd20cM0itg | AIzaSyAIzkmRELNWtG3Iur4ViHKErJ1Hx4Y6YAI
       - PORT=:8080
-      - API_RETRY_INTERVAL=10
       - API_SLEEP_INTERVAL=60
       - SEARCH_QUERY=kids
+      - SEARCH_INDEX_TEXT=search_by_text
+      - SEARCH_INDEX_PUBLISH_DATE=search_by_date
       - LIMIT_PER_SEARCH=10
     ports:
       - 8080:8080

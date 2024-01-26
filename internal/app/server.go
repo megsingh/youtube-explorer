@@ -1,7 +1,6 @@
 package app
 
 import (
-	"log"
 	"os"
 	"youtube_project/internal/api"
 
@@ -20,15 +19,14 @@ func NewServer(router *gin.Engine, videoService api.VideoService) *Server {
 	}
 }
 
+// Run starts the server by initializing routes and running the Gin router.
 func (server *Server) Run() error {
 	// run function that initializes the routes
-	r := server.Routes()
+	router := server.Routes()
 
 	// run the server through the router
-	err := r.Run(os.Getenv("PORT"))
-
+	err := router.Run(os.Getenv("PORT"))
 	if err != nil {
-		log.Printf("Server - there was an error calling Run on router: %v", err)
 		return err
 	}
 

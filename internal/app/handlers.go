@@ -2,55 +2,49 @@ package app
 
 import (
 	"net/http"
+	"youtube_project/pkg/error_handler/api_errors"
 
 	"github.com/gin-gonic/gin"
 )
 
+// ApiStatus is the api for "/" route
 func (s *Server) ApiStatus() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Header("Content-Type", "application/json")
-
-		response := map[string]string{
-			"data": "youtube video search API running smoothly",
-		}
-
-		c.JSON(http.StatusOK, response)
+		c.JSON(http.StatusOK, gin.H{"data": "youtube video search API running smoothly"})
 	}
 }
 
-func (s *Server) GetAllVideos() gin.HandlerFunc {
+// GetAllVideos returns a Gin handler function that fetches all videos.
+func (server *Server) GetAllVideos() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		nextToken := c.Query("next_token")
-		videos, err := s.videoService.GetAll(nextToken)
+
+		// Call the videoService to fetch all videos with pagination using the provided 'nextToken'.
+		responseVideos, err := server.videoService.GetAll(nextToken)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch videos"})
+			fetchError := api_errors.NewVideoFetchError(err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": fetchError.Error()})
 			return
 		}
-
-		response := map[string]interface{}{
-			"data": videos,
-		}
-
-		c.JSON(http.StatusOK, response)
+		c.JSON(http.StatusOK, gin.H{"data": responseVideos})
 	}
 }
 
-func (s *Server) Search() gin.HandlerFunc {
+// Search returns a Gin handler function that searches videos based on a search query.
+func (server *Server) Search() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		nextToken := c.Query("next_token")
-		search_query := c.Query("search_query")
+		searchQuery := c.Query("search_query")
 
-		videos, err := s.videoService.SearchAll(search_query, nextToken)
+		// Call the videoService to search videos in the database based on the provided 'searchQuery' and 'nextToken'.
+		responseVideos, err := server.videoService.QueryDB(searchQuery, nextToken)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search videos"})
+			fetchError := api_errors.NewVideoFetchError(err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": fetchError.Error()})
 			return
 		}
-
-		response := map[string]interface{}{
-			"data": videos,
-		}
-		c.JSON(http.StatusOK, response)
+		c.JSON(http.StatusOK, gin.H{"data": responseVideos})
 	}
 }

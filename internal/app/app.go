@@ -3,11 +3,13 @@ package app
 import (
 	"log"
 	"os"
+	"reflect"
 	"strconv"
-	"strings"
 	"time"
 	"youtube_project/internal/api"
 	"youtube_project/internal/repository"
+	app_errors "youtube_project/pkg/error_handler"
+	api_errors "youtube_project/pkg/error_handler/api_errors"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -17,59 +19,67 @@ import (
 func Run() error {
 
 	// setup database connection
-	dbClient, collection, err := repository.SetupDatabase()
-
+	dbClient, dbCollection, err := repository.SetupDatabase()
 	if err != nil {
-		return err
+		return app_errors.NewDatabaseConnError(err.Error())
 	}
 
-	// create storage dependency
-	storage := repository.NewStorage(dbClient, collection)
+	// create Storage instance
+	storage := repository.NewStorage(dbClient, dbCollection)
 
-	// create router dependecy
+	// create router instance
 	router := gin.Default()
 	router.Use(cors.Default())
 
+	// create Youtube Data Api service
 	youtubeService := api.NewYouTubeAPIService()
 
-	// create video service
+	// create Video service instance
 	videoService := api.NewVideoService(storage)
 
+	// start a goroutine for the background job of fetching videos from youtube
 	go func(videoService api.VideoService, youtubeService api.YouTubeAPIService) {
 		for {
-			videos, err := videoService.FetchFromYoutube(youtubeService)
-			retryInterval, _ := strconv.Atoi(os.Getenv("API_RETRY_INTERVAL"))
+			responseVideos, err := videoService.FetchFromYoutube(youtubeService)
 			sleepInterval, _ := strconv.Atoi(os.Getenv("API_SLEEP_INTERVAL"))
 
 			if err != nil {
-				if strings.Contains(err.Error(), "quotaExceeded") {
-					log.Printf("API KEY %v QUOTA EXCEEDED. RETRYING AFTER %v seconds\n", youtubeService.ApiKey, retryInterval)
+				apiErr := api_errors.NewYoutubeAPIError(err.Error())
+
+				// handle quota exceeding error for Youtube API
+				if reflect.TypeOf(err) == reflect.TypeOf(api_errors.QuotaExceedError{}) {
+					log.Println(apiErr.Error())
+
 					youtubeService.RenewServiceAPIKey()
-					time.Sleep(time.Duration(retryInterval) * time.Second) // Retry in case of an error
 					continue
 				} else {
-					log.Fatalln(err)
+					log.Println(apiErr.Error())
+					os.Exit(1)
 				}
 			}
-			err = videoService.Insert(videos)
 
-			if err != nil {
-				log.Println("service error")
-				time.Sleep(time.Duration(retryInterval) * time.Second)
-				continue
+			if err == nil {
+
+				// insert the obtained videos from Youtube into the DB
+				insertErr := videoService.InsertInDB(responseVideos)
+				if insertErr != nil {
+					databaseErr := app_errors.NewDatabaseInsertionError(insertErr.Error())
+					log.Println(databaseErr.Error())
+					os.Exit(1)
+				}
 			}
 
 			time.Sleep(time.Duration(sleepInterval) * time.Second)
 		}
 	}(videoService, youtubeService)
 
+	//create Server Instance
 	server := NewServer(router, videoService)
 
 	// start the server
 	err = server.Run()
-
 	if err != nil {
-		return err
+		return app_errors.NewServerError(err.Error())
 	}
 
 	return nil
